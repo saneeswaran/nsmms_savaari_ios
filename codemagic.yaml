@@ -1,0 +1,15 @@
+workflows:
+  ios-release:
+    name: iOS Production Build
+    environment:
+      flutter: stable
+      xcode: latest
+    scripts:
+      - name: Build Release IPA
+        script: |
+          flutter clean
+          flutter pub get
+          cd ios && pod install && cd ..
+          flutter build ipa --release --no-codesign
+    artifacts:
+      - build/ios/ipa/*.ipa
