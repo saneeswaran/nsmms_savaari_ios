@@ -8,7 +8,6 @@ import 'package:namma_savaari/customer/auth/service/customer_google_service.dart
 import 'package:namma_savaari/customer/sign_in_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
@@ -36,31 +35,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Future<void> _register() async {
-
     if (_formKey.currentState!.validate()) {
       try {
-            setState(() {
-      isSigning = true;
-    });
+        setState(() {
+          isSigning = true;
+        });
         final email = _emailController.text.trim();
         final password = _passwordController.text.trim();
 
         // Create user with email and password
-        UserCredential userCredential =
-            await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
+        UserCredential userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(email: email, password: password);
 
         // Store user information in Firestore (avoid storing passwords in plain text)
         await FirebaseFirestore.instance
             .collection('customers')
             .doc(userCredential.user!.uid)
             .set({
-          'uid': userCredential.user!.uid,
-          'email': email,
-          'status': 'loggedIn',
-        });
+              'uid': userCredential.user!.uid,
+              'email': email,
+              'status': 'loggedIn',
+            });
 
         // Store login status in SharedPreferences
         final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -125,47 +120,48 @@ class _SignUpScreenState extends State<SignUpScreen> {
   // Naviagate to home
   void _navigateToHome() {
     if (!mounted) return;
-    context
-        .go('/customerHome'); // Make sure '/admin-home' is defined in GoRouter
+    context.go(
+      '/customerHome',
+    ); // Make sure '/admin-home' is defined in GoRouter
   }
 
-  Future<void> _handleGoogleSignIn() async {
-    if (!mounted) return;
-    setState(() {
-      googleSigning = true;
-    });
-    log("clicked Google Sign-In button");
+  // Future<void> _handleGoogleSignIn() async {
+  //   if (!mounted) return;
+  //   setState(() {
+  //     googleSigning = true;
+  //   });
+  //   log("clicked Google Sign-In button");
 
-    bool result = await CustomerGoogleLoginService.customerSignInWithGoogle(
-        context: context);
+  //   bool result = await CustomerGoogleLoginService.customerSignInWithGoogle(
+  //       context: context);
 
-    if (!mounted) return;
-    setState(() {
-      googleSigning = false;
-    });
+  //   if (!mounted) return;
+  //   setState(() {
+  //     googleSigning = false;
+  //   });
 
-    if (result) {
-      log("Sign-In success, saving login state...");
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('isLoggedIn', true);
+  //   if (result) {
+  //     log("Sign-In success, saving login state...");
+  //     final prefs = await SharedPreferences.getInstance();
+  //     await prefs.setBool('isLoggedIn', true);
 
-      if (!mounted) return;
-      context.go('/customerHome');
+  //     if (!mounted) return;
+  //     context.go('/customerHome');
 
-      Fluttertoast.showToast(
-        msg: "Signed in successfully!",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-      );
-    } else {
-      log("Sign-In failed, showing toast to user");
-      Fluttertoast.showToast(
-        msg: "Failed to sign in. Try again.",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-      );
-    }
-  }
+  //     Fluttertoast.showToast(
+  //       msg: "Signed in successfully!",
+  //       toastLength: Toast.LENGTH_SHORT,
+  //       gravity: ToastGravity.BOTTOM,
+  //     );
+  //   } else {
+  //     log("Sign-In failed, showing toast to user");
+  //     Fluttertoast.showToast(
+  //       msg: "Failed to sign in. Try again.",
+  //       toastLength: Toast.LENGTH_SHORT,
+  //       gravity: ToastGravity.BOTTOM,
+  //     );
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -215,17 +211,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         labelText: 'Email',
                         labelStyle: TextStyle(color: Colors.white),
                         border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: Colors.white)),
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide:
-                              const BorderSide(color: Colors.white, width: 2),
+                          borderSide: const BorderSide(
+                            color: Colors.white,
+                            width: 2,
+                          ),
                         ),
-                        prefixIcon: Icon(
-                          Icons.email,
-                          color: Colors.white,
-                        ),
+                        prefixIcon: Icon(Icons.email, color: Colors.white),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -248,17 +244,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         labelText: 'Password',
                         labelStyle: TextStyle(color: Colors.white),
                         border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: Colors.white)),
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide:
-                              const BorderSide(color: Colors.white, width: 2),
+                          borderSide: const BorderSide(
+                            color: Colors.white,
+                            width: 2,
+                          ),
                         ),
-                        prefixIcon: const Icon(
-                          Icons.lock,
-                          color: Colors.white,
-                        ),
+                        prefixIcon: const Icon(Icons.lock, color: Colors.white),
                         suffixIcon: IconButton(
                           icon: Icon(
                             _isPasswordVisible
@@ -281,8 +277,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           return 'Password must be at least 8 characters long';
                         }
                         if (!RegExp(
-                                r'^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$')
-                            .hasMatch(value)) {
+                          r'^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$',
+                        ).hasMatch(value)) {
                           return 'Password must include letters, numbers, and symbols';
                         }
                         return null;
@@ -299,17 +295,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         labelText: 'Confirm Password',
                         labelStyle: TextStyle(color: Colors.white),
                         border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: Colors.white)),
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide:
-                              const BorderSide(color: Colors.white, width: 2),
+                          borderSide: const BorderSide(
+                            color: Colors.white,
+                            width: 2,
+                          ),
                         ),
-                        prefixIcon: const Icon(
-                          Icons.lock,
-                          color: Colors.white,
-                        ),
+                        prefixIcon: const Icon(Icons.lock, color: Colors.white),
                         suffixIcon: IconButton(
                           icon: Icon(
                             _isConfirmPasswordVisible
@@ -344,7 +340,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         foregroundColor: Colors.blue,
                         backgroundColor: Colors.white, // Text color
                         padding: const EdgeInsets.symmetric(
-                            vertical: 15.0, horizontal: 60.0),
+                          vertical: 15.0,
+                          horizontal: 60.0,
+                        ),
                         textStyle: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -364,19 +362,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             )
                           : Text('Sign Up'),
                     ),
-                    const SizedBox(
-                      height: 20,
-                    ),
+                    const SizedBox(height: 20),
                     // "Have an account? Sign In" Row
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text(
                           'Already Have an account?',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                          ),
+                          style: TextStyle(color: Colors.white, fontSize: 16),
                         ),
                         const SizedBox(width: 5),
                         GestureDetector(
@@ -385,8 +378,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      const SignInScreen()), // Ensure you have a SignInScreen widget
+                                builder: (context) => const SignInScreen(),
+                              ), // Ensure you have a SignInScreen widget
                             );
                           },
                           child: const Text(
@@ -401,50 +394,50 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ],
                     ),
                     const SizedBox(height: 30),
-                    SizedBox(
-                      height: 55,
-                      child: ElevatedButton(
-                        // onPressed: () {
-                        //   // Handle Google login
-                        // },
-                        onPressed: _handleGoogleSignIn,
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.black,
-                          backgroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          // side: BorderSide(color: Colors.grey),
-                        ),
-                        child: googleSigning
-                            ? const SizedBox(
-                                height: 24,
-                                width: 24,
-                                child: CircularProgressIndicator(
-                                  color: Colors.blue, // You can change color
-                                  strokeWidth: 3,
-                                ),
-                              )
-                            : RichText(
-                                text: TextSpan(
-                                  children: [
-                                    WidgetSpan(
-                                      alignment: PlaceholderAlignment.middle,
-                                      child: Image.asset(
-                                        'assets/google_logo_officiall.png', // Add your Google logo image in the assets
-                                        width: 24,
-                                        height: 24,
-                                      ),
-                                    ),
-                                    const TextSpan(
-                                      text: 'oogle',
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                      ),
-                    ),
+                    // SizedBox(
+                    //   height: 55,
+                    //   child: ElevatedButton(
+                    //     // onPressed: () {
+                    //     //   // Handle Google login
+                    //     // },
+                    //     onPressed: _handleGoogleSignIn,
+                    //     style: ElevatedButton.styleFrom(
+                    //       foregroundColor: Colors.black,
+                    //       backgroundColor: Colors.white,
+                    //       shape: RoundedRectangleBorder(
+                    //         borderRadius: BorderRadius.circular(30),
+                    //       ),
+                    //       // side: BorderSide(color: Colors.grey),
+                    //     ),
+                    //     child: googleSigning
+                    //         ? const SizedBox(
+                    //             height: 24,
+                    //             width: 24,
+                    //             child: CircularProgressIndicator(
+                    //               color: Colors.blue, // You can change color
+                    //               strokeWidth: 3,
+                    //             ),
+                    //           )
+                    //         : RichText(
+                    //             text: TextSpan(
+                    //               children: [
+                    //                 WidgetSpan(
+                    //                   alignment: PlaceholderAlignment.middle,
+                    //                   child: Image.asset(
+                    //                     'assets/google_logo_officiall.png', // Add your Google logo image in the assets
+                    //                     width: 24,
+                    //                     height: 24,
+                    //                   ),
+                    //                 ),
+                    //                 const TextSpan(
+                    //                   text: 'oogle',
+                    //                   style: TextStyle(color: Colors.black),
+                    //                 ),
+                    //               ],
+                    //             ),
+                    //           ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

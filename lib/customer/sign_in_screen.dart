@@ -35,11 +35,8 @@ class _SignInScreenState extends State<SignInScreen> {
         final password = _passwordController.text.trim();
 
         // Sign in user with email and password
-        UserCredential userCredential =
-            await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
+        UserCredential userCredential = await FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: email, password: password);
 
         // Set the logged-in status in SharedPreferences
         final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -52,12 +49,9 @@ class _SignInScreenState extends State<SignInScreen> {
               .collection('customers')
               .doc(userId)
               .set(
-                  {
-                'status': 'loggedIn',
-              },
-                  SetOptions(
-                      merge:
-                          true)); // Use merge to avoid overwriting existing data
+                {'status': 'loggedIn'},
+                SetOptions(merge: true),
+              ); // Use merge to avoid overwriting existing data
         }
 
         // Navigate to Home page
@@ -71,7 +65,7 @@ class _SignInScreenState extends State<SignInScreen> {
         //   (Route<dynamic> route) => false,
         // );
         // Navigate to Home page
-                      if(!mounted) return;
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Sign In Successful!'),
@@ -98,46 +92,46 @@ class _SignInScreenState extends State<SignInScreen> {
     }
   }
 
-  Future<void> _handleGoogleSignIn() async {
-    if (!mounted) return;
-    setState(() {
-      googleSigning = true;
-    });
-    log("clicked Google Sign-In button");
+  // Future<void> _handleGoogleSignIn() async {
+  //   if (!mounted) return;
+  //   setState(() {
+  //     googleSigning = true;
+  //   });
+  //   log("clicked Google Sign-In button");
 
-    bool result = await CustomerGoogleLoginService.customerSignInWithGoogle(
-        context: context);
+  //   bool result = await CustomerGoogleLoginService.customerSignInWithGoogle(
+  //       context: context);
 
-    if (!mounted) return;
-    setState(() {
-      googleSigning = false;
-    });
+  //   if (!mounted) return;
+  //   setState(() {
+  //     googleSigning = false;
+  //   });
 
-    if (result) {
-      log("Sign-In success, saving login state...");
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('isLoggedIn', true);
+  //   if (result) {
+  //     log("Sign-In success, saving login state...");
+  //     final prefs = await SharedPreferences.getInstance();
+  //     await prefs.setBool('isLoggedIn', true);
 
-      Fluttertoast.showToast(
-        msg: "Signed in successfully!",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-      );
-                            if(!mounted) return;
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const CustomerHomePage()),
-      );
-      // if (!mounted) return;
-      // context.go('/customerHome');
-    } else {
-      log("Sign-In failed, showing toast to user");
-      Fluttertoast.showToast(
-        msg: "Failed to sign in. Try again.",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-      );
-    }
-  }
+  //     Fluttertoast.showToast(
+  //       msg: "Signed in successfully!",
+  //       toastLength: Toast.LENGTH_SHORT,
+  //       gravity: ToastGravity.BOTTOM,
+  //     );
+  //                           if(!mounted) return;
+  //     Navigator.of(context).pushReplacement(
+  //       MaterialPageRoute(builder: (_) => const CustomerHomePage()),
+  //     );
+  //     // if (!mounted) return;
+  //     // context.go('/customerHome');
+  //   } else {
+  //     log("Sign-In failed, showing toast to user");
+  //     Fluttertoast.showToast(
+  //       msg: "Failed to sign in. Try again.",
+  //       toastLength: Toast.LENGTH_SHORT,
+  //       gravity: ToastGravity.BOTTOM,
+  //     );
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -189,17 +183,17 @@ class _SignInScreenState extends State<SignInScreen> {
                         labelText: 'Email',
                         labelStyle: TextStyle(color: Colors.grey[300]),
                         border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: Colors.white)),
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide:
-                              const BorderSide(color: Colors.white, width: 2),
+                          borderSide: const BorderSide(
+                            color: Colors.white,
+                            width: 2,
+                          ),
                         ),
-                        prefixIcon: Icon(
-                          Icons.email,
-                          color: Colors.white,
-                        ),
+                        prefixIcon: Icon(Icons.email, color: Colors.white),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -222,17 +216,17 @@ class _SignInScreenState extends State<SignInScreen> {
                         labelText: 'Password',
                         labelStyle: TextStyle(color: Colors.grey[300]),
                         border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: Colors.white)),
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide:
-                              const BorderSide(color: Colors.white, width: 2),
+                          borderSide: const BorderSide(
+                            color: Colors.white,
+                            width: 2,
+                          ),
                         ),
-                        prefixIcon: const Icon(
-                          Icons.lock,
-                          color: Colors.white,
-                        ),
+                        prefixIcon: const Icon(Icons.lock, color: Colors.white),
                         suffixIcon: IconButton(
                           icon: Icon(
                             _isPasswordVisible
@@ -265,8 +259,9 @@ class _SignInScreenState extends State<SignInScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    const CustForgotPasswordScreen()),
+                              builder: (context) =>
+                                  const CustForgotPasswordScreen(),
+                            ),
                           );
                         },
                         child: const Text(
@@ -288,7 +283,9 @@ class _SignInScreenState extends State<SignInScreen> {
                         foregroundColor: Colors.pink[300],
                         backgroundColor: Colors.white, // Text color
                         padding: const EdgeInsets.symmetric(
-                            vertical: 15.0, horizontal: 60.0),
+                          vertical: 15.0,
+                          horizontal: 60.0,
+                        ),
                         textStyle: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -308,19 +305,14 @@ class _SignInScreenState extends State<SignInScreen> {
                             )
                           : Text('Sign In'),
                     ),
-                    const SizedBox(
-                      height: 20,
-                    ),
+                    const SizedBox(height: 20),
                     // "Don't Have an account? Sign Up" Row
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text(
                           'Do not have an account?',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                          ),
+                          style: TextStyle(color: Colors.white, fontSize: 16),
                         ),
                         const SizedBox(width: 5),
                         GestureDetector(
@@ -329,8 +321,8 @@ class _SignInScreenState extends State<SignInScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      const SignUpScreen()), // Ensure you have a SignInScreen widget
+                                builder: (context) => const SignUpScreen(),
+                              ), // Ensure you have a SignInScreen widget
                             );
                           },
                           child: const Text(
@@ -349,10 +341,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     Row(
                       children: [
                         Expanded(
-                          child: Divider(
-                            color: Colors.grey[400],
-                            thickness: 1,
-                          ),
+                          child: Divider(color: Colors.grey[400], thickness: 1),
                         ),
                         const SizedBox(width: 8),
                         Text(
@@ -364,55 +353,52 @@ class _SignInScreenState extends State<SignInScreen> {
                         ),
                         const SizedBox(width: 8),
                         Expanded(
-                          child: Divider(
-                            color: Colors.grey[400],
-                            thickness: 1,
-                          ),
+                          child: Divider(color: Colors.grey[400], thickness: 1),
                         ),
                       ],
                     ),
                     const SizedBox(height: 30),
-                    SizedBox(
-                      height: 55,
-                      child: ElevatedButton(
-                        onPressed: _handleGoogleSignIn,
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.black,
-                          backgroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          // side: BorderSide(color: Colors.grey),
-                        ),
-                        child: googleSigning
-                            ? const SizedBox(
-                                height: 24,
-                                width: 24,
-                                child: CircularProgressIndicator(
-                                  color: Colors.blue, // You can change color
-                                  strokeWidth: 3,
-                                ),
-                              )
-                            : RichText(
-                                text: TextSpan(
-                                  children: [
-                                    WidgetSpan(
-                                      alignment: PlaceholderAlignment.middle,
-                                      child: Image.asset(
-                                        'assets/google_logo_officiall.png', // Add your Google logo image in the assets
-                                        width: 24,
-                                        height: 24,
-                                      ),
-                                    ),
-                                    const TextSpan(
-                                      text: 'oogle',
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                      ),
-                    ),
+                    // SizedBox(
+                    //   height: 55,
+                    //   child: ElevatedButton(
+                    //     onPressed: _handleGoogleSignIn,
+                    //     style: ElevatedButton.styleFrom(
+                    //       foregroundColor: Colors.black,
+                    //       backgroundColor: Colors.white,
+                    //       shape: RoundedRectangleBorder(
+                    //         borderRadius: BorderRadius.circular(30),
+                    //       ),
+                    //       // side: BorderSide(color: Colors.grey),
+                    //     ),
+                    //     child: googleSigning
+                    //         ? const SizedBox(
+                    //             height: 24,
+                    //             width: 24,
+                    //             child: CircularProgressIndicator(
+                    //               color: Colors.blue, // You can change color
+                    //               strokeWidth: 3,
+                    //             ),
+                    //           )
+                    //         : RichText(
+                    //             text: TextSpan(
+                    //               children: [
+                    //                 WidgetSpan(
+                    //                   alignment: PlaceholderAlignment.middle,
+                    //                   child: Image.asset(
+                    //                     'assets/google_logo_officiall.png', // Add your Google logo image in the assets
+                    //                     width: 24,
+                    //                     height: 24,
+                    //                   ),
+                    //                 ),
+                    //                 const TextSpan(
+                    //                   text: 'oogle',
+                    //                   style: TextStyle(color: Colors.black),
+                    //                 ),
+                    //               ],
+                    //             ),
+                    //           ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
