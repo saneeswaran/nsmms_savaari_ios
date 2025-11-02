@@ -13,3 +13,7 @@ workflows:
           flutter build ipa --release --no-codesign
     artifacts:
       - build/ios/ipa/*.ipa
+    publishing:
+      email:
+        recipients:
+          - innomatricstechnologies@gmail.com
