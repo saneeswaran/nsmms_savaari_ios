@@ -3,9 +3,9 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:namma_savaari/customer/auth/service/auth_service.dart';
 import 'package:namma_savaari/customer/auth/view/customer_login_page.dart';
+import 'package:namma_savaari/customer/auth/view/email_verification_page.dart';
 import 'package:namma_savaari/customer/customer_home_page.dart';
 import 'package:namma_savaari/customer/widgets/auth_textfield.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -81,7 +81,6 @@ class _CustomerSignupPageState extends State<CustomerSignupPage>
         }
       }
     }
-
   }
 
   // ---> SignUp
@@ -96,18 +95,18 @@ class _CustomerSignupPageState extends State<CustomerSignupPage>
       if (passwordController.text.trim() !=
           verifyPasswordController.text.trim()) {
         log("Passwords do not match");
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Passwords do not match")),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Passwords do not match")));
         return;
       }
 
       // Check gender selected
       if (selectedGender == null) {
         log("Gender not selected");
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Please select a gender")),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Please select a gender")));
         return;
       }
 
@@ -128,7 +127,9 @@ class _CustomerSignupPageState extends State<CustomerSignupPage>
           await user.sendEmailVerification();
           log("Verification email sent successfully to ${user.email}");
         } on FirebaseAuthException catch (e) {
-          log("FirebaseAuthException while sending verification: ${e.code} | ${e.message}");
+          log(
+            "FirebaseAuthException while sending verification: ${e.code} | ${e.message}",
+          );
         } catch (e, st) {
           log("Unexpected error while sending verification: $e");
           log("Stacktrace: $st");
@@ -141,7 +142,12 @@ class _CustomerSignupPageState extends State<CustomerSignupPage>
         log("🔹 SharedPreferences updated with isLoggedIn=false");
 
         if (!mounted) return;
-        context.go('/email-verification');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const EmailVerificationPage(),
+          ),
+        );
       } else {
         log("User is null after signup");
       }
@@ -150,9 +156,9 @@ class _CustomerSignupPageState extends State<CustomerSignupPage>
       log("StackTrace: $stackTrace");
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error: $e")));
     } finally {
       setState(() {
         _isSigningIn = false;
@@ -229,47 +235,53 @@ class _CustomerSignupPageState extends State<CustomerSignupPage>
                     children: [
                       // EMAIL
                       AuthTextfield(
-                          controller: emailController, label: "Email"),
+                        controller: emailController,
+                        label: "Email",
+                      ),
 
                       // NAME
                       AuthTextfield(controller: nameController, label: "Name"),
 
                       // GENDER
                       DropdownButtonFormField(
-                          items: const [
-                            DropdownMenuItem(
-                                value: "Male",
-                                child: Text(
-                                  "Male",
-                                  style: TextStyle(color: Colors.white),
-                                )),
-                            DropdownMenuItem(
-                                value: "Female",
-                                child: Text(
-                                  "Female",
-                                  style: TextStyle(color: Colors.white),
-                                )),
-                            DropdownMenuItem(
-                                value: "Other",
-                                child: Text(
-                                  "Other",
-                                  style: TextStyle(color: Colors.white),
-                                )),
-                          ],
-                          dropdownColor: Colors.black,
-                          decoration: InputDecoration(
-                            labelText: "Gender",
-                            labelStyle: const TextStyle(color: Colors.white),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(color: Colors.white),
+                        items: const [
+                          DropdownMenuItem(
+                            value: "Male",
+                            child: Text(
+                              "Male",
+                              style: TextStyle(color: Colors.white),
                             ),
                           ),
-                          onChanged: (value) {
-                            setState(() {
-                              selectedGender = value;
-                            });
-                          }),
+                          DropdownMenuItem(
+                            value: "Female",
+                            child: Text(
+                              "Female",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          DropdownMenuItem(
+                            value: "Other",
+                            child: Text(
+                              "Other",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ],
+                        dropdownColor: Colors.black,
+                        decoration: InputDecoration(
+                          labelText: "Gender",
+                          labelStyle: const TextStyle(color: Colors.white),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(color: Colors.white),
+                          ),
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            selectedGender = value;
+                          });
+                        },
+                      ),
                       // PASSWORD
                       AuthTextfield(
                         controller: passwordController,
@@ -317,23 +329,23 @@ class _CustomerSignupPageState extends State<CustomerSignupPage>
                         children: [
                           const Text(
                             "Already have an account? ",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                            ),
+                            style: TextStyle(color: Colors.white, fontSize: 14),
                           ),
                           InkWell(
                             onTap: () {
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const CustomerLoginPage()));
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const CustomerLoginPage(),
+                                ),
+                              );
                             },
                             child: Container(
                               decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(8)),
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
                               child: const Padding(
                                 padding: EdgeInsets.all(8.0),
                                 child: Text(
@@ -344,7 +356,7 @@ class _CustomerSignupPageState extends State<CustomerSignupPage>
                                 ),
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
 

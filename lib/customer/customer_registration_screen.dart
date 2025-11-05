@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:namma_savaari/customer/auth/service/auth_service.dart';
+import 'package:namma_savaari/customer/customer_home_page.dart';
 import 'package:namma_savaari/customer/widgets/auth_textfield.dart';
 
 class RegistrationScreen extends StatefulWidget {
@@ -149,51 +149,59 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     children: [
                       // EMAIL
                       AuthTextfield(
-                          controller: emailController, label: "Email"),
+                        controller: emailController,
+                        label: "Email",
+                      ),
 
                       // NAME
                       AuthTextfield(controller: nameController, label: "Name"),
 
                       // GENDER
                       DropdownButtonFormField(
-                          items: const [
-                            DropdownMenuItem(
-                                value: "Male",
-                                child: Text(
-                                  "Male",
-                                  style: TextStyle(color: Colors.white),
-                                )),
-                            DropdownMenuItem(
-                                value: "Female",
-                                child: Text(
-                                  "Female",
-                                  style: TextStyle(color: Colors.white),
-                                )),
-                            DropdownMenuItem(
-                                value: "Other",
-                                child: Text(
-                                  "Other",
-                                  style: TextStyle(color: Colors.white),
-                                )),
-                          ],
-                          dropdownColor: Colors.black,
-                          decoration: InputDecoration(
-                            labelText: "Gender",
-                            labelStyle: const TextStyle(color: Colors.white),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(color: Colors.white),
+                        items: const [
+                          DropdownMenuItem(
+                            value: "Male",
+                            child: Text(
+                              "Male",
+                              style: TextStyle(color: Colors.white),
                             ),
                           ),
-                          onChanged: (value) {
-                            setState(() {
-                              selectedGender = value;
-                            });
-                          }),
+                          DropdownMenuItem(
+                            value: "Female",
+                            child: Text(
+                              "Female",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          DropdownMenuItem(
+                            value: "Other",
+                            child: Text(
+                              "Other",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ],
+                        dropdownColor: Colors.black,
+                        decoration: InputDecoration(
+                          labelText: "Gender",
+                          labelStyle: const TextStyle(color: Colors.white),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(color: Colors.white),
+                          ),
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            selectedGender = value;
+                          });
+                        },
+                      ),
 
                       // PHONE NUMBER
                       AuthTextfield(
-                          controller: phoneNoController, label: "Phone Number"),
+                        controller: phoneNoController,
+                        label: "Phone Number",
+                      ),
 
                       // PASSWORD
                       AuthTextfield(
@@ -213,7 +221,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       // SIGN UP
                       InkWell(
                         onTap: () {
-                          context.go('/home');
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (cotext) => CustomerHomePage(),
+                            ),
+                          );
                         },
                         child: Container(
                           width: MediaQuery.of(context).size.width * 07,
@@ -244,10 +257,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         children: [
                           const Text(
                             "Already have an account? ",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                            ),
+                            style: TextStyle(color: Colors.white, fontSize: 14),
                           ),
                           InkWell(
                             onTap: () {
@@ -259,8 +269,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             },
                             child: Container(
                               decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(8)),
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
                               child: const Padding(
                                 padding: EdgeInsets.all(8.0),
                                 child: Text(
@@ -271,7 +282,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 ),
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
 

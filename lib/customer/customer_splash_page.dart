@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:go_router/go_router.dart';
+import 'package:namma_savaari/customer/auth/view/customer_signup_page.dart';
+import 'package:namma_savaari/customer/customer_home_page.dart';
 
 class CustomerSplashPage extends StatefulWidget {
   const CustomerSplashPage({super.key});
@@ -51,26 +52,33 @@ class _CustomerSplashPageState extends State<CustomerSplashPage> {
 
   void _navigateToHome() {
     if (!mounted) return;
-    context.go('/customerHome');
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const CustomerHomePage()),
+    );
   }
 
   void _navigateToSignUp() {
     if (!mounted) return;
-    context.go('/customerSginUpScreen'); // or '/signIn' if you want
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const CustomerSignupPage()),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Container(
-      height: MediaQuery.of(context).size.height,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Colors.redAccent.shade700, Colors.black87],
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.redAccent.shade700, Colors.black87],
+          ),
         ),
       ),
-    ));
+    );
   }
 }

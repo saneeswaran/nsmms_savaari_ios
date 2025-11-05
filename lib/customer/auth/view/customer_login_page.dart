@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:namma_savaari/customer/auth/service/auth_service.dart';
 import 'package:namma_savaari/customer/auth/view/customer_signup_page.dart';
 import 'package:namma_savaari/customer/customer_home_page.dart';
@@ -79,7 +78,7 @@ class _CustomerLoginPageState extends State<CustomerLoginPage>
     }
   }
 
-// LOGIN
+  // LOGIN
   Future<void> loginAuth() async {
     try {
       setState(() {
@@ -90,7 +89,9 @@ class _CustomerLoginPageState extends State<CustomerLoginPage>
 
       // Login with Firebase
       final user = await auth.signInWithEmail(
-          emailController.text.trim(), passwordController.text.trim());
+        emailController.text.trim(),
+        passwordController.text.trim(),
+      );
 
       if (user != null) {
         log("Login successful for ${user.uid}");
@@ -107,7 +108,8 @@ class _CustomerLoginPageState extends State<CustomerLoginPage>
             builder: (_) => AlertDialog(
               title: const Text("Email not verified"),
               content: Text(
-                  "Please verify your email (${user.email}) before logging in."),
+                "Please verify your email (${user.email}) before logging in.",
+              ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
@@ -120,8 +122,9 @@ class _CustomerLoginPageState extends State<CustomerLoginPage>
         }
 
         // Email is verified , now save user info in Firestore
-        final userDoc =
-            FirebaseFirestore.instance.collection("customers").doc(user.uid);
+        final userDoc = FirebaseFirestore.instance
+            .collection("customers")
+            .doc(user.uid);
 
         final docSnapshot = await userDoc.get();
         if (!docSnapshot.exists) {
@@ -157,16 +160,19 @@ class _CustomerLoginPageState extends State<CustomerLoginPage>
         // Navigate to home page
         if (!mounted) return;
         if (!mounted) return;
-        context.go('/home');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const CustomerHomePage()),
+        );
       }
     } catch (e, stackTrace) {
       log("Login error: $e");
       log("StackTrace: $stackTrace");
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Login failed: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Login failed: $e")));
     } finally {
       if (mounted) {
         setState(() {
@@ -246,7 +252,9 @@ class _CustomerLoginPageState extends State<CustomerLoginPage>
                     children: [
                       // EMAIL
                       AuthTextfield(
-                          controller: emailController, label: "Email"),
+                        controller: emailController,
+                        label: "Email",
+                      ),
 
                       // PASSWORD
                       AuthTextfield(
@@ -290,23 +298,23 @@ class _CustomerLoginPageState extends State<CustomerLoginPage>
                         children: [
                           const Text(
                             "Don't have an account yet? ",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                            ),
+                            style: TextStyle(color: Colors.white, fontSize: 14),
                           ),
                           InkWell(
                             onTap: () {
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const CustomerSignupPage()));
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const CustomerSignupPage(),
+                                ),
+                              );
                             },
                             child: Container(
                               decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(8)),
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
                               child: const Padding(
                                 padding: EdgeInsets.all(8.0),
                                 child: Text(
@@ -317,7 +325,7 @@ class _CustomerLoginPageState extends State<CustomerLoginPage>
                                 ),
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
 

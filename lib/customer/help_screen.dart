@@ -1,8 +1,5 @@
-// bus_booking_application
-
 import 'package:flutter/material.dart';
-
-import 'customer_chat_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'customer_help_topics.dart';
 import 'customer_new_bus_booking_predefined_messages.dart';
 import 'customer_offers_predefined_screen.dart';
@@ -45,7 +42,14 @@ class _HelpScreenState extends State<HelpScreen> {
       title: 'Chat with Us',
       icon: Icons.chat,
       color: Colors.white,
-      destination: const CustomerChatScreen(),
+      onTap: () async {
+        final whatsappUrl = Uri.parse("https://wa.me/919019666299");
+        if (await canLaunchUrl(whatsappUrl)) {
+          await launchUrl(whatsappUrl, mode: LaunchMode.externalApplication);
+        } else {
+          throw 'Could not launch WhatsApp';
+        }
+      },
     ),
   ];
 
@@ -59,13 +63,10 @@ class _HelpScreenState extends State<HelpScreen> {
           children: [
             // Title at the top left of the body
             const Padding(
-              padding: EdgeInsets.only(left: 16.0,top: 16),
+              padding: EdgeInsets.only(left: 16.0, top: 16),
               child: Text(
                 'FAQS (Select a Help Topic)',
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.grey,
-                ),
+                style: TextStyle(fontSize: 20, color: Colors.grey),
               ),
             ),
             // White container for "Bus Tickets"
@@ -123,11 +124,7 @@ class _HelpScreenState extends State<HelpScreen> {
         ],
       ),
       child: ListTile(
-        leading: Icon(
-          item.icon,
-          color: Colors.redAccent.shade700,
-          size: 24,
-        ),
+        leading: Icon(item.icon, color: Colors.redAccent.shade700, size: 24),
         title: Align(
           alignment: Alignment.centerLeft,
           child: Text(
@@ -142,7 +139,7 @@ class _HelpScreenState extends State<HelpScreen> {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => item.destination),
+            MaterialPageRoute(builder: (context) => item.destination!),
           );
         },
       ),
@@ -154,24 +151,14 @@ class HelpItem {
   final String title;
   final IconData icon;
   final Color color;
-  final Widget destination;
+  final Widget? destination;
+  final VoidCallback? onTap;
 
   HelpItem({
     required this.title,
     required this.icon,
     required this.color,
-    required this.destination,
+    this.destination,
+    this.onTap,
   });
 }
-
-
-
-
-
-
-
-
-
-
-
-

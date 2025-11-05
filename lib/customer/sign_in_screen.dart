@@ -1,9 +1,6 @@
-import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:namma_savaari/customer/auth/service/customer_google_service.dart';
 import 'package:namma_savaari/customer/sign_up_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'cust_forgot_password_screen.dart';

@@ -1,10 +1,7 @@
-import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:go_router/go_router.dart';
-import 'package:namma_savaari/customer/auth/service/customer_google_service.dart';
+import 'package:namma_savaari/customer/customer_home_page.dart';
 import 'package:namma_savaari/customer/sign_in_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -63,7 +60,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
         // Navigate to Home page
         if (!mounted) return;
-        context.go("/customerHome");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const CustomerHomePage()),
+        );
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -120,8 +120,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   // Naviagate to home
   void _navigateToHome() {
     if (!mounted) return;
-    context.go(
-      '/customerHome',
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const CustomerHomePage()),
     ); // Make sure '/admin-home' is defined in GoRouter
   }
 
