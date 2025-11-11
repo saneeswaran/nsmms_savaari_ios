@@ -12,8 +12,11 @@ workflows:
           cd ios && pod install && cd ..
           flutter build ipa --release --no-codesign
     artifacts:
-      - build/ios/ipa/*.ipa
+      - build/ios/ipa/*.ipa  # Ensure this matches the actual build output
     publishing:
-      email:
-        recipients:
-          - innomatricstechnologies@gmail.com
+      app_store_connect:
+        api_key_id: "Innomatrics Technologies"  
+        issuer_id: "29f996f7-d320-4397-957d-b9fba3713fff"    
+        api_key: "HU24V233MP"
+        ipa_path: build/ios/ipa/*.ipa 
+        notify: false
