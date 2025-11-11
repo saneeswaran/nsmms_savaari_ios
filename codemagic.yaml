@@ -4,25 +4,46 @@ workflows:
     environment:
       flutter: stable
       xcode: latest
+      vars:
+        APP_STORE_CONNECT_API_KEY_ID: "HU24V233MP"
+        APP_STORE_CONNECT_ISSUER_ID: "29f996f7-d320-4397-957d-b9fba3713fff"
+        APP_STORE_CONNECT_API_KEY: |
+-----BEGIN PRIVATE KEY-----
+MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQg1jpKQIC/N50SSJMr
+f0ei/I24PbVQESI78J8TOEUti7igCgYIKoZIzj0DAQehRANCAASB9fr+cdvY7bLi
+VLGPpBFhzXM5EQJMvfWWCv/GCTGdHO65ldgOc1/k2LbLR0Htl1y9xOenvENQWVHK
+hUCT0Aqj
+-----END PRIVATE KEY-----
     scripts:
-      - name: Build Release IPA
+      - name: Clean and get dependencies
         script: |
           flutter clean
           flutter pub get
-          cd ios && pod install && cd ..
+
+      - name: Install CocoaPods dependencies
+        script: |
+          cd ios
+          pod install
+          cd ..
+
+      - name: Build iOS release .ipa
+        script: |
           flutter build ipa --release --no-codesign
+
     artifacts:
       - build/ios/ipa/*.ipa
+
     publishing:
       app_store_connect:
         api_key_id: "HU24V233MP"
         issuer_id: "29f996f7-d320-4397-957d-b9fba3713fff"
         api_key: |
-          -----BEGIN PRIVATE KEY-----
-          MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQg1jpKQIC/N50SSJMr
-          f0ei/I24PbVQESI78J8TOEUti7igCgYIKoZIzj0DAQehRANCAASB9fr+cdvY7bLi
-          VLGPpBFhzXM5EQJMvfWWCv/GCTGdHO65ldgOc1/k2LbLR0Htl1y9xOenvENQWVHK
-          hUCT0Aqj
-          -----END PRIVATE KEY-----
+        -----BEGIN PRIVATE KEY-----
+MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQg1jpKQIC/N50SSJMr
+f0ei/I24PbVQESI78J8TOEUti7igCgYIKoZIzj0DAQehRANCAASB9fr+cdvY7bLi
+VLGPpBFhzXM5EQJMvfWWCv/GCTGdHO65ldgOc1/k2LbLR0Htl1y9xOenvENQWVHK
+hUCT0Aqj
+-----END PRIVATE KEY-----
         ipa_path: build/ios/ipa/*.ipa
-        notify: false
+        submit_to_testflight: true
+        notify: true
