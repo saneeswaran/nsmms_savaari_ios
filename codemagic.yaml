@@ -15,8 +15,14 @@ workflows:
       - build/ios/ipa/*.ipa  # Ensure this matches the actual build output
     publishing:
       app_store_connect:
-        api_key_id: "Innomatrics Technologies"  
+        api_key_id: "HU24V233MP"  
         issuer_id: "29f996f7-d320-4397-957d-b9fba3713fff"    
-        api_key: "HU24V233MP"
+        api_key: |
+          -----BEGIN PRIVATE KEY-----
+          MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQg1jpKQIC/N50SSJMr
+          f0ei/I24PbVQESI78J8TOEUti7igCgYIKoZIzj0DAQehRANCAASB9fr+cdvY7bLi
+          VLGPpBFhzXM5EQJMvfWWCv/GCTGdHO65ldgOc1/k2LbLR0Htl1y9xOenvENQWVHK
+          hUCT0Aqj
+          -----END PRIVATE KEY-----
         ipa_path: build/ios/ipa/*.ipa 
         notify: false
