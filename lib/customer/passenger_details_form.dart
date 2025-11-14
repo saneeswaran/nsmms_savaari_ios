@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:namma_savaari/customer/auth/service/auth_service.dart';
 import 'package:namma_savaari/customer/auth/view/customer_login_page.dart';
 import 'book_seat_screen.dart';
 
@@ -844,6 +843,7 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
                             () => _passengerForms[index]['age'] = value,
                           ),
                           TextInputType.number,
+                          2,
                         ),
                         SizedBox(height: 12),
                         DropdownButtonFormField<String>(
@@ -940,7 +940,7 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
                         ),
                       );
                     },
-                    child: Text("Login"),
+                    child: Text("Login", style: TextStyle(color: Colors.white)),
                   ),
                 ),
             ],
@@ -958,13 +958,16 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
     IconData icon,
     Function(String) onChanged, [
     TextInputType keyboardType = TextInputType.text,
+    int? maxLength,
   ]) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
         initialValue: value,
+        maxLength: maxLength,
         keyboardType: keyboardType,
         decoration: InputDecoration(
+          counterText: "",
           labelText: label,
           hintText: fieldKey == 'fullName' ? 'Firstname Lastname' : null,
           prefixIcon: Icon(icon, color: Colors.redAccent),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:namma_savaari/customer/auth/service/login_provider.dart';
 import 'package:namma_savaari/customer/customer_home_page.dart';
+import 'package:provider/provider.dart';
 
 class CustomerSplashPage extends StatefulWidget {
   const CustomerSplashPage({super.key});
@@ -12,6 +14,9 @@ class _CustomerSplashPageState extends State<CustomerSplashPage> {
   @override
   void initState() {
     super.initState();
+
+    //set login status
+    context.read<LoginProvider>().createLogin();
     Future.delayed(const Duration(seconds: 1), () {
       if (!mounted) return;
       Navigator.pushReplacement(

@@ -11,6 +11,13 @@ class LoginProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> createLogin() async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setBool("isLogin", true);
+    _isLogin = true;
+    notifyListeners();
+  }
+
   Future<void> handleLocalAuth() async {
     final pref = await SharedPreferences.getInstance();
     _isLogin = pref.getBool("isLogin") ?? false;
