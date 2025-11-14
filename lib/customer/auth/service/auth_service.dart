@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+final currentUser = FirebaseAuth.instance.currentUser;
+
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -82,7 +84,8 @@ class AuthService {
           prefs.remove('temp_password');
         } else {
           throw Exception(
-              "Email not verified. Please check your inbox for verification link.");
+            "Email not verified. Please check your inbox for verification link.",
+          );
         }
       }
 

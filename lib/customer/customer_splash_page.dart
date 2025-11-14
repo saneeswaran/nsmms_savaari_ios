@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:namma_savaari/customer/auth/view/customer_signup_page.dart';
 import 'package:namma_savaari/customer/customer_home_page.dart';
 
 class CustomerSplashPage extends StatefulWidget {
@@ -15,68 +12,43 @@ class _CustomerSplashPageState extends State<CustomerSplashPage> {
   @override
   void initState() {
     super.initState();
-
-    // Delay the navigation until after the frame
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkLoginStatus();
+    Future.delayed(const Duration(seconds: 1), () {
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const CustomerHomePage()),
+      );
     });
-  }
-
-  Future<void> _checkLoginStatus() async {
-    final user = FirebaseAuth.instance.currentUser;
-
-    if (user == null) {
-      // No user signed in → go to SignUp
-      _navigateToSignUp();
-      return;
-    }
-
-    try {
-      final doc = await FirebaseFirestore.instance
-          .collection("customers")
-          .doc(user.uid)
-          .get();
-
-      if (doc.exists && doc.data()?['status'] == 'loggedIn') {
-        // User is logged in → navigate to Home
-        _navigateToHome();
-      } else {
-        // Not logged in or no status → navigate to SignUp
-        _navigateToSignUp();
-      }
-    } catch (e) {
-      // On error → navigate to SignUp
-      _navigateToSignUp();
-    }
-  }
-
-  void _navigateToHome() {
-    if (!mounted) return;
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const CustomerHomePage()),
-    );
-  }
-
-  void _navigateToSignUp() {
-    if (!mounted) return;
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const CustomerSignupPage()),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
     return Scaffold(
       body: Container(
-        height: MediaQuery.of(context).size.height,
+        height: size.height * 1,
+        width: size.width * 1,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [Colors.redAccent.shade700, Colors.black87],
           ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SizedBox(height: size.height * 0.2),
+            SizedBox(
+              height: size.height * 0.3,
+              width: size.width * 0.8,
+              child: Image.asset("assets/Namma_Savaari_LOGO1.png"),
+            ),
+            const SizedBox(height: 40),
+            CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+            ),
+          ],
         ),
       ),
     );

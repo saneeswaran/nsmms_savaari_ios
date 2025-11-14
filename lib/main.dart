@@ -2,10 +2,10 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:namma_savaari/customer/auth/service/login_provider.dart';
 import 'package:namma_savaari/customer/customer_splash_page.dart';
 import 'package:namma_savaari/firebase_options.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/foundation.dart';
 import 'customer/theme_provider.dart';
 
 void main() async {
@@ -23,7 +23,10 @@ void main() async {
   FlutterNativeSplash.remove();
   runApp(
     MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => ThemeProvider())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => LoginProvider()),
+      ],
       child: const MyApp(),
     ),
   );
@@ -39,8 +42,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Namma Savaari',
       theme: ThemeData(
-        fontFamily: kIsWeb ? "Montserrat" : null,
         brightness: isDarkMode ? Brightness.dark : Brightness.light,
+        appBarTheme: AppBarTheme(iconTheme: IconThemeData(color: Colors.white)),
       ),
       debugShowCheckedModeBanner: false,
       home: const CustomerSplashPage(),

@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:namma_savaari/customer/auth/service/auth_service.dart';
 
 class BookingsScreen extends StatefulWidget {
   const BookingsScreen({super.key});
@@ -19,12 +20,8 @@ class _BookingsScreenState extends State<BookingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currentUser = FirebaseAuth.instance.currentUser;
-
     if (currentUser == null) {
-      return Center(
-        child: Text('Please login to view your bookings'),
-      );
+      return Center(child: Text('Please login to view your bookings'));
     }
 
     return Scaffold(
@@ -33,7 +30,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
           StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
                 .collection('customers')
-                .doc(currentUser.uid)
+                .doc(currentUser?.uid)
                 .collection('bookings')
                 .orderBy('createdAt', descending: true)
                 .snapshots(),
@@ -55,8 +52,10 @@ class _BookingsScreenState extends State<BookingsScreen> {
                       SizedBox(height: 16),
                       TextButton(
                         onPressed: () async {},
-                        child: Text('No bookings yet',
-                            style: TextStyle(fontSize: 18, color: Colors.grey)),
+                        child: Text(
+                          'No bookings yet',
+                          style: TextStyle(fontSize: 18, color: Colors.grey),
+                        ),
                       ),
                       SizedBox(height: 8),
                       Text(
@@ -74,7 +73,8 @@ class _BookingsScreenState extends State<BookingsScreen> {
                   final journey =
                       booking['journeyDetails'] as Map<String, dynamic>;
                   final passengers = List<Map<String, dynamic>>.from(
-                      booking['passengerDetails']);
+                    booking['passengerDetails'],
+                  );
                   final date = (booking['createdAt'] as Timestamp).toDate();
                   final formattedDate = DateFormat('MMM dd, yyyy').format(date);
                   final formattedTime = DateFormat('hh:mm a').format(date);
@@ -144,8 +144,9 @@ class _BookingsScreenState extends State<BookingsScreen> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Container(
-                                        padding:
-                                            EdgeInsets.symmetric(horizontal: 8),
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                        ),
                                         child: Text(
                                           journey['source'],
                                           style: TextStyle(
@@ -154,11 +155,14 @@ class _BookingsScreenState extends State<BookingsScreen> {
                                           ),
                                         ),
                                       ),
-                                      Icon(Icons.arrow_forward,
-                                          color: Colors.grey),
+                                      Icon(
+                                        Icons.arrow_forward,
+                                        color: Colors.grey,
+                                      ),
                                       Container(
-                                        padding:
-                                            EdgeInsets.symmetric(horizontal: 8),
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                        ),
                                         child: Text(
                                           journey['destination'],
                                           style: TextStyle(
@@ -179,8 +183,11 @@ class _BookingsScreenState extends State<BookingsScreen> {
                                 scrollDirection: Axis.horizontal,
                                 child: Row(
                                   children: [
-                                    Icon(Icons.directions_bus,
-                                        size: 16, color: Colors.grey),
+                                    Icon(
+                                      Icons.directions_bus,
+                                      size: 16,
+                                      color: Colors.grey,
+                                    ),
                                     SizedBox(width: 8),
                                     Text(
                                       '${journey['travelName']} • ${journey['busType']}',
@@ -194,8 +201,11 @@ class _BookingsScreenState extends State<BookingsScreen> {
                               // Date and seat
                               Row(
                                 children: [
-                                  Icon(Icons.calendar_today,
-                                      size: 16, color: Colors.grey),
+                                  Icon(
+                                    Icons.calendar_today,
+                                    size: 16,
+                                    color: Colors.grey,
+                                  ),
                                   SizedBox(width: 8),
                                   Text(
                                     '${_formatDate(journey['date'])} • Seat ${journey['seats'].join(', ')}',
@@ -209,8 +219,11 @@ class _BookingsScreenState extends State<BookingsScreen> {
                               // Boarding point
                               Row(
                                 children: [
-                                  Icon(Icons.location_on,
-                                      size: 16, color: Colors.grey),
+                                  Icon(
+                                    Icons.location_on,
+                                    size: 16,
+                                    color: Colors.grey,
+                                  ),
                                   SizedBox(width: 8),
                                   Text(
                                     'Boarding: ${journey['boardingPoint']}',
@@ -223,8 +236,11 @@ class _BookingsScreenState extends State<BookingsScreen> {
                               // Dropping point
                               Row(
                                 children: [
-                                  Icon(Icons.location_on,
-                                      size: 16, color: Colors.grey),
+                                  Icon(
+                                    Icons.location_on,
+                                    size: 16,
+                                    color: Colors.grey,
+                                  ),
                                   SizedBox(width: 8),
                                   Text(
                                     'Dropping: ${journey['droppingPoint']}',
@@ -251,33 +267,38 @@ class _BookingsScreenState extends State<BookingsScreen> {
                               // Display all passengers
                               Column(
                                 children: passengers
-                                    .map((passenger) => Padding(
-                                          padding: EdgeInsets.only(bottom: 12),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                passenger['name'] ??
-                                                    'Name not available',
-                                                style: TextStyle(
-                                                    fontSize: 15,
-                                                    color: Colors.green),
+                                    .map(
+                                      (passenger) => Padding(
+                                        padding: EdgeInsets.only(bottom: 12),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              passenger['name'] ??
+                                                  'Name not available',
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                color: Colors.green,
                                               ),
-                                              SizedBox(height: 4),
-                                              Text(
-                                                '${passenger['age'] ?? 'N/A'} yrs • ${_getGenderText(passenger['gender'])}',
-                                                style: TextStyle(
-                                                    color: Colors.grey),
+                                            ),
+                                            SizedBox(height: 4),
+                                            Text(
+                                              '${passenger['age'] ?? 'N/A'} yrs • ${_getGenderText(passenger['gender'])}',
+                                              style: TextStyle(
+                                                color: Colors.grey,
                                               ),
-                                              Text(
-                                                'Seat: ${passenger['seat'] ?? 'N/A'}',
-                                                style: TextStyle(
-                                                    color: Colors.grey),
+                                            ),
+                                            Text(
+                                              'Seat: ${passenger['seat'] ?? 'N/A'}',
+                                              style: TextStyle(
+                                                color: Colors.grey,
                                               ),
-                                            ],
-                                          ),
-                                        ))
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
                                     .toList(),
                               ),
 
@@ -329,10 +350,13 @@ class _BookingsScreenState extends State<BookingsScreen> {
                         if (booking['bookingStatus'] == 'Confirmed')
                           Container(
                             padding: EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 12),
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
                             decoration: BoxDecoration(
                               border: Border(
-                                  top: BorderSide(color: Colors.grey.shade200)),
+                                top: BorderSide(color: Colors.grey.shade200),
+                              ),
                             ),
                             child: TextButton(
                               onPressed: () {
@@ -355,9 +379,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
           if (_isLoading)
             Container(
               color: Colors.black.withOpacity(0.5),
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
+              child: Center(child: CircularProgressIndicator()),
             ),
         ],
       ),
@@ -399,7 +421,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
     'Found better alternative',
     'Bus timing not suitable',
     'Personal emergency',
-    'Other reason'
+    'Other reason',
   ];
 
   void _showCancelDialog(BuildContext context, DocumentSnapshot booking) {
@@ -428,10 +450,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                       items: cancellationReasons.map((String reason) {
                         return DropdownMenuItem<String>(
                           value: reason,
-                          child: Text(
-                            reason,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                          child: Text(reason, overflow: TextOverflow.ellipsis),
                         );
                       }).toList(),
                       onChanged: (value) {
@@ -469,8 +488,10 @@ class _BookingsScreenState extends State<BookingsScreen> {
   }
 
   Future<void> _cancelBooking(
-      BuildContext context, DocumentSnapshot booking, String remarks) async {
-
+    BuildContext context,
+    DocumentSnapshot booking,
+    String remarks,
+  ) async {
     setState(() {
       _isLoading = true; // Show loading
     });
@@ -520,7 +541,8 @@ class _BookingsScreenState extends State<BookingsScreen> {
       log("Sending POST request to cancel booking...");
       final response = await http.post(
         Uri.parse(
-            "https://namma-savaari-api-backend.vercel.app/cancel-booking"),
+          "https://namma-savaari-api-backend.vercel.app/cancel-booking",
+        ),
         headers: headers,
         body: jsonEncode(requestBody),
       );
@@ -531,13 +553,16 @@ class _BookingsScreenState extends State<BookingsScreen> {
       final responseData = jsonDecode(response.body);
       log("Decoded Response Data: $responseData");
 
-      final apiSuccess = response.statusCode == 200 &&
+      final apiSuccess =
+          response.statusCode == 200 &&
           (responseData['Error'] == null ||
               responseData['Error']['ErrorCode'] == 0);
 
-// Also allow "already canceled" case
-      final alreadyCancelled = responseData['Error']?['ErrorMessage']
-              ?.contains('Cancellation Already Done') ??
+      // Also allow "already canceled" case
+      final alreadyCancelled =
+          responseData['Error']?['ErrorMessage']?.contains(
+            'Cancellation Already Done',
+          ) ??
           false;
 
       if (apiSuccess || alreadyCancelled) {
@@ -549,16 +574,16 @@ class _BookingsScreenState extends State<BookingsScreen> {
             .collection('bookings')
             .doc(booking.id)
             .update({
-          'bookingStatus': 'Cancelled',
-          'lastUpdated': FieldValue.serverTimestamp(),
-          'cancellationTime': FieldValue.serverTimestamp(),
-          'cancellationDetails': {
-            'apiResponse': responseData,
-            'cancelledAt': DateTime.now().toIso8601String(),
-            'refundAmount': responseData['Response']?['RefundAmount'],
-            'cancellationReason': remarks,
-          }
-        });
+              'bookingStatus': 'Cancelled',
+              'lastUpdated': FieldValue.serverTimestamp(),
+              'cancellationTime': FieldValue.serverTimestamp(),
+              'cancellationDetails': {
+                'apiResponse': responseData,
+                'cancelledAt': DateTime.now().toIso8601String(),
+                'refundAmount': responseData['Response']?['RefundAmount'],
+                'cancellationReason': remarks,
+              },
+            });
         // messenger.showSnackBar(
         //   const SnackBar(
         //     content: Text(

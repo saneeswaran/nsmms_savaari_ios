@@ -136,11 +136,13 @@ class _HelpScreenState extends State<HelpScreen> {
             ),
           ),
         ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => item.destination!),
-          );
+        onTap: () async {
+          final whatsappUrl = Uri.parse("https://wa.me/919019666299");
+          if (await canLaunchUrl(whatsappUrl)) {
+            await launchUrl(whatsappUrl, mode: LaunchMode.externalApplication);
+          } else {
+            throw 'Could not launch WhatsApp';
+          }
         },
       ),
     );

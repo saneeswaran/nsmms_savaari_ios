@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:namma_savaari/customer/auth/service/auth_service.dart';
+import 'package:namma_savaari/customer/auth/view/customer_login_page.dart';
 import 'book_seat_screen.dart';
 
 class BlockSeatPage extends StatefulWidget {
@@ -98,10 +100,7 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
     setState(() {
       _savedContacts = snapshot.docs.map((doc) {
         final data = doc.data();
-        return {
-          ...data,
-          'id': doc.id,
-        };
+        return {...data, 'id': doc.id};
       }).toList();
 
       // Set the latest contact as default if available
@@ -190,16 +189,15 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
     setState(() {
       _savedPassengers = snapshot.docs.map((doc) {
         final data = doc.data();
-        return {
-          ...data,
-          'id': doc.id,
-        };
+        return {...data, 'id': doc.id};
       }).toList();
     });
   }
 
   void _onSavedPassengerSelected(
-      int passengerIndex, Map<String, dynamic> passenger) {
+    int passengerIndex,
+    Map<String, dynamic> passenger,
+  ) {
     setState(() {
       _passengerForms[passengerIndex] = {
         ..._passengerForms[passengerIndex],
@@ -237,7 +235,8 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-                "Please enter passenger name for Seat ${form['seat']['SeatName']}"),
+              "Please enter passenger name for Seat ${form['seat']['SeatName']}",
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -249,7 +248,8 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-                "Please enter both first and last names for passenger in Seat ${form['seat']['SeatName']} (e.g., 'Namma Savaari')"),
+              "Please enter both first and last names for passenger in Seat ${form['seat']['SeatName']} (e.g., 'Namma Savaari')",
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -260,7 +260,8 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-                "Please fill age and gender for passenger in Seat ${form['seat']['SeatName']}"),
+              "Please fill age and gender for passenger in Seat ${form['seat']['SeatName']}",
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -272,8 +273,9 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
     if (_commonPhone.isEmpty || _commonEmail.isEmpty || _commonState.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content:
-              Text("Please fill all contact details (Phone, Email, State)"),
+          content: Text(
+            "Please fill all contact details (Phone, Email, State)",
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -297,8 +299,9 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
     if (phone.length < 10 || !RegExp(r'^[0-9]+$').hasMatch(phone)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content:
-              Text("Please enter a valid phone number (minimum 10 digits)"),
+          content: Text(
+            "Please enter a valid phone number (minimum 10 digits)",
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -341,7 +344,8 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
       return {
         "LeadPassenger":
             _passengerForms.indexOf(form) == 0, // First passenger is lead
-        "PassengerId": DateTime.now().millisecondsSinceEpoch +
+        "PassengerId":
+            DateTime.now().millisecondsSinceEpoch +
             _passengerForms.indexOf(form),
         "Title": "Mr",
         "FirstName": nameParts['firstName'],
@@ -366,7 +370,8 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
           "SeatStatus": form['seat']['SeatStatus'],
           "SeatType": form['seat']['SeatType'],
           "Width": form['seat']['Width'],
-          "Price": form['seat']['Price'] ??
+          "Price":
+              form['seat']['Price'] ??
               {
                 "CurrencyCode": "INR",
                 "BasePrice": form['seat']['SeatFare'],
@@ -390,8 +395,8 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
                   "SGSTAmount": 0,
                   "SGSTRate": 0,
                   "TaxableAmount": form['seat']['SeatFare'],
-                }
-              }
+                },
+              },
         },
         // Added
         "BookedAt": DateTime.now().toIso8601String(),
@@ -413,7 +418,8 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
           .asMap()
           .entries
           .where(
-              (entry) => !_passengerForms[entry.key]['isUsingSavedPassenger'])
+            (entry) => !_passengerForms[entry.key]['isUsingSavedPassenger'],
+          )
           .length;
 
       final totalPassengersAfterAdd = currentCount + newPassengersCount;
@@ -432,7 +438,8 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
         }
       }
 
-      final remainingCapacity = maxPassengers -
+      final remainingCapacity =
+          maxPassengers -
           (currentCount -
               (totalPassengersAfterAdd > maxPassengers
                   ? (totalPassengersAfterAdd - maxPassengers)
@@ -441,9 +448,11 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
       if (remainingCapacity > 0) {
         // --------------------------------------------------------------------
         int addedCount = 0;
-        for (var i = 0;
-            i < passengersData.length && addedCount < remainingCapacity;
-            i++) {
+        for (
+          var i = 0;
+          i < passengersData.length && addedCount < remainingCapacity;
+          i++
+        ) {
           if (!_passengerForms[i]['isUsingSavedPassenger']) {
             final nameParts = _splitFullName(_passengerForms[i]['fullName']);
             final fullName = _passengerForms[i]['fullName'];
@@ -466,8 +475,7 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
       }
 
       await batch.commit();
-      log(
-          "Passengers saved to Firestore (strict 6-passenger limit enforced)");
+      log("Passengers saved to Firestore (strict 6-passenger limit enforced)");
     } catch (e) {
       setState(() {
         _errorMessage = "Failed to save passengers: $e";
@@ -521,7 +529,7 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
           });
 
           // Navigate to Booking Page with all selected seats
-                                if(!mounted) return;
+          if (!mounted) return;
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -568,27 +576,30 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
             });
           });
         } else {
-          final errorMessage = responseData['Error']?['ErrorMessage'] ??
+          final errorMessage =
+              responseData['Error']?['ErrorMessage'] ??
               "Failed to block seats. Please try again.";
-                                    if(!mounted) return;
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
           );
         }
       } else {
-        final errorMessage = responseData['Error']?['ErrorMessage'] ??
+        final errorMessage =
+            responseData['Error']?['ErrorMessage'] ??
             "Failed to block seats. Status code: ${response.statusCode}";
-                                  if(!mounted) return;
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
         );
       }
     } catch (e) {
-                            if(!mounted) return;
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text("An error occurred: $e"),
-            backgroundColor: Colors.red),
+          content: Text("An error occurred: $e"),
+          backgroundColor: Colors.red,
+        ),
       );
       log("Exception: $e");
     } finally {
@@ -603,9 +614,7 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: Colors.white,
-        ),
+        iconTheme: IconThemeData(color: Colors.white),
         title: Row(
           children: [
             Column(
@@ -614,17 +623,19 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
                 Text(
                   "Passenger Information",
                   style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
                 SizedBox(height: 4),
                 Text(
                   "${widget.sourceCity} -> ${widget.destinationCity}",
                   style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ],
             ),
@@ -642,7 +653,8 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
             children: [
               Card(
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 elevation: 5,
                 margin: EdgeInsets.only(bottom: 20),
                 child: Padding(
@@ -656,13 +668,17 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
                           Text(
                             "Contact Information",
                             style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           if (_savedContacts.isNotEmpty)
                             DropdownButton<String>(
                               value: _selectedContactId,
-                              icon:
-                                  Icon(Icons.bookmark, color: Colors.redAccent),
+                              icon: Icon(
+                                Icons.bookmark,
+                                color: Colors.redAccent,
+                              ),
                               underline: SizedBox(), // Remove default underline
                               items: _savedContacts.map((contact) {
                                 return DropdownMenuItem<String>(
@@ -681,12 +697,17 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
                       TextFormField(
                         controller: _phoneController,
                         keyboardType: TextInputType.phone,
+                        maxLength: 10,
                         decoration: InputDecoration(
+                          counterText: "",
                           labelText: "Phone Number",
-                          prefixIcon:
-                              Icon(Icons.phone, color: Colors.redAccent),
+                          prefixIcon: Icon(
+                            Icons.phone,
+                            color: Colors.redAccent,
+                          ),
                           border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8)),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                           filled: true,
                           fillColor: Colors.grey[200],
                         ),
@@ -701,10 +722,13 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
                           labelText: "Email",
-                          prefixIcon:
-                              Icon(Icons.email, color: Colors.redAccent),
+                          prefixIcon: Icon(
+                            Icons.email,
+                            color: Colors.redAccent,
+                          ),
                           border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8)),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                           filled: true,
                           fillColor: Colors.grey[200],
                         ),
@@ -720,7 +744,8 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
                           labelText: "State",
                           prefixIcon: Icon(Icons.home, color: Colors.redAccent),
                           border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8)),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                           filled: true,
                           fillColor: Colors.grey[200],
                         ),
@@ -741,7 +766,8 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
 
                 return Card(
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   elevation: 5,
                   margin: EdgeInsets.only(bottom: 20),
                   child: Padding(
@@ -755,7 +781,9 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
                             Text(
                               "Seat ${seat['SeatName']}",
                               style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             if (form['isUsingSavedPassenger'])
                               Chip(
@@ -770,9 +798,10 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Select from saved passengers:",
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.w500)),
+                              Text(
+                                "Select from saved passengers:",
+                                style: TextStyle(fontWeight: FontWeight.w500),
+                              ),
                               SizedBox(height: 8),
                               Wrap(
                                 spacing: 8,
@@ -780,11 +809,14 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
                                 children: _savedPassengers.map((passenger) {
                                   return ChoiceChip(
                                     label: Text(
-                                        "${passenger['FirstName']} ${passenger['LastName']}"),
+                                      "${passenger['FirstName']} ${passenger['LastName']}",
+                                    ),
                                     selected: false,
                                     onSelected: (_) =>
                                         _onSavedPassengerSelected(
-                                            index, passenger),
+                                          index,
+                                          passenger,
+                                        ),
                                   );
                                 }).toList(),
                               ),
@@ -799,7 +831,8 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
                           "Full Name", // Updated hint text
                           Icons.person,
                           (value) => setState(
-                              () => _passengerForms[index]['fullName'] = value),
+                            () => _passengerForms[index]['fullName'] = value,
+                          ),
                         ),
                         _buildTextField(
                           index,
@@ -808,7 +841,8 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
                           "Age",
                           Icons.cake,
                           (value) => setState(
-                              () => _passengerForms[index]['age'] = value),
+                            () => _passengerForms[index]['age'] = value,
+                          ),
                           TextInputType.number,
                         ),
                         SizedBox(height: 12),
@@ -818,16 +852,22 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
                             labelText: "Gender",
                             prefixIcon: Icon(Icons.wc, color: Colors.redAccent),
                             border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8)),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                             filled: true,
                             fillColor: Colors.grey[200],
                           ),
                           items: ["Male", "Female"]
-                              .map((gender) => DropdownMenuItem(
-                                  value: gender, child: Text(gender)))
+                              .map(
+                                (gender) => DropdownMenuItem(
+                                  value: gender,
+                                  child: Text(gender),
+                                ),
+                              )
                               .toList(),
                           onChanged: (value) => setState(
-                              () => _passengerForms[index]['gender'] = value),
+                            () => _passengerForms[index]['gender'] = value,
+                          ),
                           validator: (value) =>
                               value == null ? "Gender is required" : null,
                         ),
@@ -836,8 +876,10 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
                             alignment: Alignment.centerRight,
                             child: TextButton(
                               onPressed: () => _clearPassengerForm(index),
-                              child: Text("Clear Saved Passenger",
-                                  style: TextStyle(color: Colors.red)),
+                              child: Text(
+                                "Clear Saved Passenger",
+                                style: TextStyle(color: Colors.red),
+                              ),
                             ),
                           ),
                       ],
@@ -851,11 +893,13 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
               ElevatedButton(
                 onPressed: _isLoading || _isSeatBlocked ? null : _blockSeat,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      _isSeatBlocked ? Colors.green : Colors.redAccent,
+                  backgroundColor: _isSeatBlocked
+                      ? Colors.green
+                      : Colors.redAccent,
                   minimumSize: Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
                 child: _isLoading
                     ? CircularProgressIndicator(color: Colors.white)
@@ -864,16 +908,40 @@ class _BlockSeatPageState extends State<BlockSeatPage> {
                             ? "Seats Booked"
                             : "Book ${widget.selectedSeats.length} Seats",
                         style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
               ),
               if (_errorMessage.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 16),
-                  child:
-                      Text(_errorMessage, style: TextStyle(color: Colors.red)),
+                  child: Text(
+                    _errorMessage,
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+              if (_errorMessage == "User not logged in.")
+                Center(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent,
+                      minimumSize: Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CustomerLoginPage(),
+                        ),
+                      );
+                    },
+                    child: Text("Login"),
+                  ),
                 ),
             ],
           ),
